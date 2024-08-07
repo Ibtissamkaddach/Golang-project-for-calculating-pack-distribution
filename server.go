@@ -23,11 +23,7 @@ func packHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Calculate the number of packs needed
-	packs, err := calculatePacks(items)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	packs := calculatePacks(items)
 
 	// Return the result as JSON
 	w.Header().Set("Content-Type", "application/json")
