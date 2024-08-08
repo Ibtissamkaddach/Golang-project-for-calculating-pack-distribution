@@ -6,11 +6,12 @@ import (
 )
 
 func main() {
-	// Initialize the server and define routes
-	http.HandleFunc("/calculate", packHandler)
-	log.Println("Starting server on :8080")
-	err := http.ListenAndServe(":8080", nil)
+	http.HandleFunc("/calculate", packHandler) // Register the handler for /calculate
+	r := server.NewRouter()
+	port := "8080"
+	log.Printf("Starting server on port %s", port)
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to start server: %v", err)
 	}
 }

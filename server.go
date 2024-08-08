@@ -1,31 +1,28 @@
 package main
 
 import (
-	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 )
 
-// packHandler handles HTTP requests to calculate pack distribution
+// packHandler handles the request to calculate packs
 func packHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
+	if r.Method == http.MethodPost {
+		r.ParseForm()
+		quantityStr := r.FormValue("quantity")
+		quantity, err := strconv.Atoi(quantityStr)
+		if err != nil {
+			http.Error(w, "Invalid quantity", http.StatusBadRequest)
+			return
+		}
+
+		// Calculate packs
+		packs := calculatePacks(quantity)
+
+		// Write the result as a response
+		fmt.Fprintf(w, "Packs: %v\n", packs)
+	} else {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
 	}
-
-	// Parse the number of items from query parameters
-	r.ParseForm()
-	itemsStr := r.FormValue("items")
-	items, err := strconv.Atoi(itemsStr)
-	if err != nil || items <= 0 {
-		http.Error(w, "Invalid number of items", http.StatusBadRequest)
-		return
-	}
-
-	// Calculate the number of packs needed
-	packs := calculatePacks(items)
-
-	// Return the result as JSON
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(packs)
 }
